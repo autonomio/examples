@@ -28,7 +28,8 @@ y_val = targets[-num_val_samples:]
 counts = np.bincount(y_train[:, 0])
 
 print(
-    "Number of positive samples in training data: {} ({:.2f}% of total)".format(
+    '''Number of positive samples in training data: {}
+    ({:.2f}% of total)'''.format(
         counts[1], 100 * float(counts[1]) / len(y_train)
     )
 )
