@@ -84,6 +84,7 @@ def FraudDetection(x_train, y_train, x_val, y_val, params):
         keras.metrics.TruePositives(name="tp"),
         keras.metrics.Precision(name="precision"),
         keras.metrics.Recall(name="recall"),
+        'accuracy'
     ]
 
     model.compile(
