@@ -1,6 +1,6 @@
 import pandas as pd
 from jako import DistributedScan
-
+import numpy as np
 
 data = pd.read_csv('crypto_tradinds.csv')
 btc_data = data[data['ticker'] == 'BTC']
@@ -55,24 +55,30 @@ def bitcoin_model(x_train, y_train, x_val, y_val, params):
     from tensorflow.keras.models import Sequential
     from tensorflow.keras.layers import LSTM, Dense, Dropout
 
-    mod = Sequential()
-    mod.add(LSTM(params['first_neuron'],
-                 return_sequences=True, input_shape=(25, 2)))
-    mod.add(LSTM(64))
-    mod.add(Dropout(params['dropout']))
-    mod.add(Dense(128, activation='relu'))
-    mod.add(Dense(1))
-    mod.compile(optimizer='adam', loss='mse')
-    mod.fit(x_train, y_train,
-            batch_size=params["batch_size"],
-            validation_data=(x_val, y_val),
-            epochs=75, shuffle=False, verbose=2)
+    model = Sequential()
+    model.add(LSTM(params['first_neuron'],
+                   return_sequences=True, input_shape=(25, 2)))
+    model.add(LSTM(64))
+    model.add(Dropout(params['dropout']))
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(1))
+    model.compile(optimizer='adam', loss='mse')
+    out = model.fit(x_train, y_train,
+                    batch_size=params["batch_size"],
+                    validation_data=(x_val, y_val),
+                    epochs=params['epochs'], shuffle=False, verbose=2)
 
-    return mod
+    return out, model
 
 
 n = 25  # chunk from the dataset used to train the model
 x, x_val, y, y_val, target, pred_convert = data_preproc_and_split(btc_data, n)
+
+x = np.asarray(x).astype('float32')
+y = np.asarray(y).astype('float32')
+x_val = np.asarray(x_val).astype('float32')
+y_val = np.asarray(y_val).astype('float32')
+
 p = {
     "first_neuron": [16, 32, 48],
     "dropout": [0.1, 0.2, 0.3],
